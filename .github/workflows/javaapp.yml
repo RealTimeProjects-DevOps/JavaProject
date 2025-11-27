@@ -4,5 +4,5 @@ jobs:
     Build:
       runs-on: ubuntu-latest
       steps:
-          -name: Test
-          run: echo "first job"
+          - name: Test
+            run: echo "first job"
