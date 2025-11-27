@@ -5,4 +5,9 @@ jobs:
       runs-on: ubuntu-latest
       steps:
           - name: Test
-            run: echo "first job"
+            run: echo "building job"
+    Deploy:
+      runs-on: self-hosted
+      steps:
+         - name: Deploy Java App
+           run: echo "Deployment app"
