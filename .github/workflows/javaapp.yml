@@ -3,6 +3,6 @@ on: workflow_dispatch
 jobs:
     Build:
       runs-on: ubuntu-latest
-        steps:
+      steps:
           -name: Test
-           run: echo "first job"
+          run: echo "first job"
