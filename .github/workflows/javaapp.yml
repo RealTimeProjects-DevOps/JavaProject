@@ -1,5 +1,5 @@
 name: Java App Deployment
-  on: workflow_dispatch
+on: workflow_dispatch
    jobs:
       Build:
         run: echo "Sample Java Build "
