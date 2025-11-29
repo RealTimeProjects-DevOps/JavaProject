@@ -11,7 +11,7 @@ jobs:
           - name: Mavn Build
             run: mvn clean package -DskipTests
           - name: Build
-            run: docker build -t java:latest .
+            run: sudo docker build -t java:latest .
            
             
     Deploy:
