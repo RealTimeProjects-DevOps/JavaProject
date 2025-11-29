@@ -12,6 +12,7 @@ jobs:
             run: mvn clean package -DskipTests
           - name: Build
             run: sudo docker build -t java:latest .
+                
            
             
     Deploy:
