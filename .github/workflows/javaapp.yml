@@ -8,6 +8,8 @@ jobs:
       steps:
           - name: Checkout
             uses: actions/checkout@v4
+          - name: Mavn Build
+            run: mvn clean install
           - name: Build
             run: docker build -t java:latest .
            
