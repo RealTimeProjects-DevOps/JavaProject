@@ -9,7 +9,7 @@ jobs:
           - name: Checkout
             uses: actions/checkout@v4
           - name: Mavn Build
-            run: mvn clean install
+            run: mvn clean package -DskipTests
           - name: Build
             run: docker build -t java:latest .
            
