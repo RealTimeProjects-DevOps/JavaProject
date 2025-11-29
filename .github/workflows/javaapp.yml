@@ -3,7 +3,7 @@ on: workflow_dispatch
 jobs:
 
     Build:
-      runs-on: ubuntu-latest
+      runs-on: ubuntu
       
       steps:
           - name: Checkout
@@ -20,6 +20,3 @@ jobs:
       steps:
           - name: Deploy
             run: docker compose up
-
-        - name: Deploy Java App
-          run: docker compose up
