@@ -16,7 +16,10 @@ jobs:
             
     Deploy:
       runs-on: ubuntu
+      needs: Build 
       steps:
+          - name: Deploy
+            run: docker compose up
 
         - name: Deploy Java App
           run: docker compose up
