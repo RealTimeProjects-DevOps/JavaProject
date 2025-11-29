@@ -4,10 +4,10 @@ jobs:
     Build:
       runs-on: ubuntu-latest
       steps:
-          - name: Test
-            run: echo "building job"
+          - name: Build
+            run: docker build -t java:latest
     Deploy:
       runs-on: ubuntu
       steps:
          - name: Deploy Java App
-           run: echo "Deployment app"
+           run: docker compose -d
