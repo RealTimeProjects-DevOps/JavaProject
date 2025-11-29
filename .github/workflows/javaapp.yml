@@ -17,4 +17,4 @@ jobs:
       steps:
 
         - name: Deploy Java App
-          run: docker compose -d
+          run: docker compose up
