@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
+enviroment: DEV
   build-push-deploy:
     runs-on: self-hosted   # your ubuntu@selfhosted runner
 
