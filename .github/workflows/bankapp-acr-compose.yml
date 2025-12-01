@@ -92,7 +92,7 @@ jobs:
             MYSQL_PORT:   "3306"
         continue-on-error: true
         run: |
-          sudo docker compose down
+          sudo docker compose down --remove-orphans
 
       - name: Start stack with Docker Compose (using env vars)
         env:
