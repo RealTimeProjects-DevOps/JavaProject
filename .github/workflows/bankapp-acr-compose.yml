@@ -1,0 +1,75 @@
+name: BankApp CI/CD to ACR + Docker Compose
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-push-deploy:
+    runs-on: self-hosted   # your ubuntu@selfhosted runner
+
+    env:
+      # ACR details (all stored as GitHub Secrets)
+      ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}   # e.g. myregistry.azurecr.io
+      ACR_USERNAME:      ${{ secrets.ACR_USERNAME }}
+      ACR_PASSWORD:      ${{ secrets.ACR_PASSWORD }}
+      # Image name & tag
+      BANKAPP_IMAGE:     ${{ secrets.ACR_LOGIN_SERVER }}/bankapp:${{ github.sha }}
+
+      # MySQL settings (from GitHub secrets)
+      MYSQL_ROOT_PASSWORD:         ${{ secrets.MYSQL_ROOT_PASSWORD }}
+      MYSQL_DATABASE:              ${{ secrets.MYSQL_DATABASE }}          # e.g. bankappdb
+      MYSQL_USER:                  ${{ secrets.MYSQL_USER }}              # e.g. bankuser
+      MYSQL_PASSWORD:              ${{ secrets.MYSQL_PASSWORD }}
+      MYSQL_PORT:                  3306
+
+      # Spring Boot datasource (from GitHub secrets)
+      SPRING_DATASOURCE_URL:       ${{ secrets.SPRING_DATASOURCE_URL }}   # full JDBC URL
+      SPRING_DATASOURCE_USERNAME:  ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+      SPRING_DATASOURCE_PASSWORD:  ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+      BANKAPP_PORT:                8080
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Build Spring Boot JAR (skip tests)
+        run: |
+          mvn -B clean package -DskipTests
+
+      - name: Login to Azure Container Registry
+        run: |
+          echo "$ACR_PASSWORD" | docker login "$ACR_LOGIN_SERVER" -u "$ACR_USERNAME" --password-stdin
+
+      - name: Build Docker image for bankapp
+        run: |
+          # Build image using the Dockerfile in the repo root
+          docker build -t "$BANKAPP_IMAGE" .
+
+      - name: Push image to ACR
+        run: |
+          docker push "$BANKAPP_IMAGE"
+
+      - name: Show docker images (debug)
+        run: docker images
+
+      - name: Stop and remove existing stack (if any)
+        continue-on-error: true
+        run: |
+          sudo docker compose down
+
+      - name: Start stack with Docker Compose (using env vars)
+        run: |
+          # docker-compose.yml uses ${BANKAPP_IMAGE}, ${MYSQL_*}, ${SPRING_*}, etc.
+          sudo docker compose up -d
+
+      - name: Show running containers (debug)
+        run: |
+          sudo docker ps
