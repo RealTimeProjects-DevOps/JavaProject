@@ -6,28 +6,28 @@ on:
   workflow_dispatch:
 
 jobs:
-
   build-push-deploy:
     runs-on: self-hosted   # your ubuntu@selfhosted runner
-    environment : DEV
+    environment: DEV       # 👈 must match your GitHub Environment name exactly
 
     env:
       # ACR details (all stored as GitHub Secrets)
-      ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}   # e.g. myregistry.azurecr.io
-      ACR_USERNAME:      ${{ secrets.ACR_USERNAME }}
+      ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}   # e.g. javaappbank.azurecr.io
+      ACR_USERNAME:      ${{ secrets.ACR_USERNAME }}      # e.g. JavaAppBank
       ACR_PASSWORD:      ${{ secrets.ACR_PASSWORD }}
-      # Image name & tag
+
+      # Image name & tag (we'll reuse this everywhere)
       BANKAPP_IMAGE:     ${{ secrets.ACR_LOGIN_SERVER }}/bankapp:${{ github.sha }}
 
       # MySQL settings (from GitHub secrets)
-      MYSQL_ROOT_PASSWORD:         ${{ secrets.MYSQL_ROOT_PASSWORD }}
-      MYSQL_DATABASE:              ${{ secrets.MYSQL_DATABASE }}          # e.g. bankappdb
-      MYSQL_USER:                  ${{ secrets.MYSQL_USER }}              # e.g. bankuser
+      MYSQL_ROOT_PASSWORD:         ${{ secrets.MYSQL_ROOT_PASSWORD }}    # e.g. Test@123
+      MYSQL_DATABASE:              ${{ secrets.MYSQL_DATABASE }}         # e.g. bankappdb
+      MYSQL_USER:                  ${{ secrets.MYSQL_USER }}             # e.g. root or bankuser
       MYSQL_PASSWORD:              ${{ secrets.MYSQL_PASSWORD }}
       MYSQL_PORT:                  3306
 
       # Spring Boot datasource (from GitHub secrets)
-      SPRING_DATASOURCE_URL:       ${{ secrets.SPRING_DATASOURCE_URL }}   # full JDBC URL
+      SPRING_DATASOURCE_URL:       ${{ secrets.SPRING_DATASOURCE_URL }}  # jdbc:mysql://mysql:3306/...
       SPRING_DATASOURCE_USERNAME:  ${{ secrets.SPRING_DATASOURCE_USERNAME }}
       SPRING_DATASOURCE_PASSWORD:  ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
       BANKAPP_PORT:                8080
@@ -47,77 +47,53 @@ jobs:
           mvn -B clean package -DskipTests
 
       - name: Login to Azure Container Registry
-        env:
-          ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
-          ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
-          ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
         run: |
           echo "Checking env vars..."
           if [ -z "$ACR_LOGIN_SERVER" ]; then echo "ACR_LOGIN_SERVER is EMPTY"; exit 1; fi
           if [ -z "$ACR_USERNAME" ]; then echo "ACR_USERNAME is EMPTY"; exit 1; fi
-      
+
           echo "Logging into $ACR_LOGIN_SERVER as $ACR_USERNAME"
           echo "$ACR_PASSWORD" | sudo docker login "$ACR_LOGIN_SERVER" -u "$ACR_USERNAME" --password-stdin
 
       - name: Build Docker image for bankapp
         run: |
-          # Build image using the Dockerfile in the repo root
-           sudo docker build -t "$BANKAPP_IMAGE" .
+          echo "Building image: $BANKAPP_IMAGE"
+          sudo docker build -t "$BANKAPP_IMAGE" .
 
       - name: Push image to ACR
         run: |
+          echo "Pushing image: $BANKAPP_IMAGE"
           sudo docker push "$BANKAPP_IMAGE"
 
       - name: Show docker images (debug)
         run: sudo docker images
 
       - name: Stop and remove existing stack (if any)
-        env:
-            # image built & pushed earlier in the job
-            BANKAPP_IMAGE: ${{ secrets.ACR_LOGIN_SERVER }}/bankapp:${{ github.sha }}
-  
-            # MySQL envs used in docker-compose.yml
-            MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-            MYSQL_DATABASE:      ${{ secrets.MYSQL_DATABASE }}
-            MYSQL_USER:          ${{ secrets.MYSQL_USER }}
-            MYSQL_PASSWORD:      ${{ secrets.MYSQL_PASSWORD }}
-  
-            # Spring Boot datasource envs used in docker-compose.yml
-            SPRING_DATASOURCE_URL:       ${{ secrets.SPRING_DATASOURCE_URL }}
-            SPRING_DATASOURCE_USERNAME:  ${{ secrets.SPRING_DATASOURCE_USERNAME }}
-            SPRING_DATASOURCE_PASSWORD:  ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-  
-            # Optional port vars if you use them in compose
-            BANKAPP_PORT: "8080"
-            MYSQL_PORT:   "3306"
         continue-on-error: true
         run: |
           sudo docker compose down --remove-orphans
 
       - name: Start stack with Docker Compose (using env vars)
         env:
-            # image built & pushed earlier in the job
-            BANKAPP_IMAGE: ${{ secrets.ACR_LOGIN_SERVER }}/bankapp:${{ github.sha }}
-  
-            # MySQL envs used in docker-compose.yml
-            MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-            MYSQL_DATABASE:      ${{ secrets.MYSQL_DATABASE }}
-            MYSQL_USER:          ${{ secrets.MYSQL_USER }}
-            MYSQL_PASSWORD:      ${{ secrets.MYSQL_PASSWORD }}
-  
-            # Spring Boot datasource envs used in docker-compose.yml
-            SPRING_DATASOURCE_URL:       ${{ secrets.SPRING_DATASOURCE_URL }}
-            SPRING_DATASOURCE_USERNAME:  ${{ secrets.SPRING_DATASOURCE_USERNAME }}
-            SPRING_DATASOURCE_PASSWORD:  ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-  
-            # Optional port vars if you use them in compose
-            BANKAPP_PORT: "8080"
-            MYSQL_PORT:   "3306"
+          # Reuse job-level env vars here so they are visible to docker compose
+          BANKAPP_IMAGE:            ${{ env.BANKAPP_IMAGE }}
+
+          MYSQL_ROOT_PASSWORD:      ${{ env.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE:           ${{ env.MYSQL_DATABASE }}
+          MYSQL_USER:               ${{ env.MYSQL_USER }}
+          MYSQL_PASSWORD:           ${{ env.MYSQL_PASSWORD }}
+
+          SPRING_DATASOURCE_URL:       ${{ env.SPRING_DATASOURCE_URL }}
+          SPRING_DATASOURCE_USERNAME:  ${{ env.SPRING_DATASOURCE_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD:  ${{ env.SPRING_DATASOURCE_PASSWORD }}
+
+          BANKAPP_PORT: "8080"
+          MYSQL_PORT:   "3306"
         run: |
-                echo "BANKAPP_IMAGE=$BANKAPP_IMAGE"
-                # -E keeps the env vars when using sudo
-                sudo -E docker compose up -d
-  
+          echo "BANKAPP_IMAGE=$BANKAPP_IMAGE"
+          # -E keeps the env vars when using sudo
+          sudo -E docker compose up -d
+
       - name: Show running containers (debug)
         run: |
-              sudo docker ps
+          sudo docker ps
