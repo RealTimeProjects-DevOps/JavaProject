@@ -9,7 +9,7 @@ jobs:
 
   build-push-deploy:
     runs-on: self-hosted   # your ubuntu@selfhosted runner
-    enviroment: DEV
+    environment : DEV
 
     env:
       # ACR details (all stored as GitHub Secrets)
