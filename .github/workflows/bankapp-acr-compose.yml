@@ -71,7 +71,12 @@ jobs:
       - name: Stop and remove existing stack (if any)
         continue-on-error: true
         run: |
-          sudo docker compose down --remove-orphans
+          # Bring down current compose stack and orphans
+          sudo docker compose down --remove-orphans || true
+
+          # Extra safety: force remove any leftover container named 'bankapp'
+          sudo docker rm -f bankapp || true
+
 
       - name: Start stack with Docker Compose (using env vars)
         env:
