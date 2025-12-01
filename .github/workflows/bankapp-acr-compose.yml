@@ -77,10 +77,29 @@ jobs:
           sudo docker compose down
 
       - name: Start stack with Docker Compose (using env vars)
+        env:
+            # image built & pushed earlier in the job
+            BANKAPP_IMAGE: ${{ secrets.ACR_LOGIN_SERVER }}/bankapp:${{ github.sha }}
+  
+            # MySQL envs used in docker-compose.yml
+            MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+            MYSQL_DATABASE:      ${{ secrets.MYSQL_DATABASE }}
+            MYSQL_USER:          ${{ secrets.MYSQL_USER }}
+            MYSQL_PASSWORD:      ${{ secrets.MYSQL_PASSWORD }}
+  
+            # Spring Boot datasource envs used in docker-compose.yml
+            SPRING_DATASOURCE_URL:       ${{ secrets.SPRING_DATASOURCE_URL }}
+            SPRING_DATASOURCE_USERNAME:  ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+            SPRING_DATASOURCE_PASSWORD:  ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+  
+            # Optional port vars if you use them in compose
+            BANKAPP_PORT: "8080"
+            MYSQL_PORT:   "3306"
         run: |
-          # docker-compose.yml uses ${BANKAPP_IMAGE}, ${MYSQL_*}, ${SPRING_*}, etc.
-          sudo docker compose up -d
-
+                echo "BANKAPP_IMAGE=$BANKAPP_IMAGE"
+                # -E keeps the env vars when using sudo
+                sudo -E docker compose up -d
+  
       - name: Show running containers (debug)
         run: |
-          sudo docker ps
+              sudo docker ps
