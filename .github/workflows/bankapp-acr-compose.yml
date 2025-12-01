@@ -6,9 +6,10 @@ on:
   workflow_dispatch:
 
 jobs:
-enviroment: DEV
+
   build-push-deploy:
     runs-on: self-hosted   # your ubuntu@selfhosted runner
+    enviroment: DEV
 
     env:
       # ACR details (all stored as GitHub Secrets)
