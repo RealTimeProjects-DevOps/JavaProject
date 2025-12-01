@@ -7,27 +7,21 @@ on:
 
 jobs:
   build-push-deploy:
-    runs-on: self-hosted   # your ubuntu@selfhosted runner
-    environment: DEV       # 👈 must match your GitHub Environment name exactly
+    runs-on: self-hosted
+    environment: DEV 
 
     env:
-      # ACR details (all stored as GitHub Secrets)
-      ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}   # e.g. javaappbank.azurecr.io
-      ACR_USERNAME:      ${{ secrets.ACR_USERNAME }}      # e.g. JavaAppBank
+      ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }} 
+      ACR_USERNAME:      ${{ secrets.ACR_USERNAME }} 
       ACR_PASSWORD:      ${{ secrets.ACR_PASSWORD }}
-
-      # Image name & tag (we'll reuse this everywhere)
       BANKAPP_IMAGE:     ${{ secrets.ACR_LOGIN_SERVER }}/bankapp:${{ github.sha }}
-
-      # MySQL settings (from GitHub secrets)
-      MYSQL_ROOT_PASSWORD:         ${{ secrets.MYSQL_ROOT_PASSWORD }}    # e.g. Test@123
-      MYSQL_DATABASE:              ${{ secrets.MYSQL_DATABASE }}         # e.g. bankappdb
-      MYSQL_USER:                  ${{ secrets.MYSQL_USER }}             # e.g. root or bankuser
+      MYSQL_ROOT_PASSWORD:         ${{ secrets.MYSQL_ROOT_PASSWORD }} 
+      MYSQL_DATABASE:              ${{ secrets.MYSQL_DATABASE }}  
+      MYSQL_USER:                  ${{ secrets.MYSQL_USER }} 
       MYSQL_PASSWORD:              ${{ secrets.MYSQL_PASSWORD }}
       MYSQL_PORT:                  3306
 
-      # Spring Boot datasource (from GitHub secrets)
-      SPRING_DATASOURCE_URL:       ${{ secrets.SPRING_DATASOURCE_URL }}  # jdbc:mysql://mysql:3306/...
+      SPRING_DATASOURCE_URL:       ${{ secrets.SPRING_DATASOURCE_URL }}
       SPRING_DATASOURCE_USERNAME:  ${{ secrets.SPRING_DATASOURCE_USERNAME }}
       SPRING_DATASOURCE_PASSWORD:  ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
       BANKAPP_PORT:                8080
@@ -48,9 +42,6 @@ jobs:
 
       - name: Login to Azure Container Registry
         run: |
-          echo "Checking env vars..."
-          if [ -z "$ACR_LOGIN_SERVER" ]; then echo "ACR_LOGIN_SERVER is EMPTY"; exit 1; fi
-          if [ -z "$ACR_USERNAME" ]; then echo "ACR_USERNAME is EMPTY"; exit 1; fi
 
           echo "Logging into $ACR_LOGIN_SERVER as $ACR_USERNAME"
           echo "$ACR_PASSWORD" | sudo docker login "$ACR_LOGIN_SERVER" -u "$ACR_USERNAME" --password-stdin
