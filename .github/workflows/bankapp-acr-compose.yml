@@ -72,6 +72,24 @@ jobs:
         run: sudo docker images
 
       - name: Stop and remove existing stack (if any)
+        env:
+            # image built & pushed earlier in the job
+            BANKAPP_IMAGE: ${{ secrets.ACR_LOGIN_SERVER }}/bankapp:${{ github.sha }}
+  
+            # MySQL envs used in docker-compose.yml
+            MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+            MYSQL_DATABASE:      ${{ secrets.MYSQL_DATABASE }}
+            MYSQL_USER:          ${{ secrets.MYSQL_USER }}
+            MYSQL_PASSWORD:      ${{ secrets.MYSQL_PASSWORD }}
+  
+            # Spring Boot datasource envs used in docker-compose.yml
+            SPRING_DATASOURCE_URL:       ${{ secrets.SPRING_DATASOURCE_URL }}
+            SPRING_DATASOURCE_USERNAME:  ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+            SPRING_DATASOURCE_PASSWORD:  ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+  
+            # Optional port vars if you use them in compose
+            BANKAPP_PORT: "8080"
+            MYSQL_PORT:   "3306"
         continue-on-error: true
         run: |
           sudo docker compose down
