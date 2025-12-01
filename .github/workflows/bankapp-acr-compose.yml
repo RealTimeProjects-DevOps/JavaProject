@@ -57,7 +57,7 @@ jobs:
           if [ -z "$ACR_USERNAME" ]; then echo "ACR_USERNAME is EMPTY"; exit 1; fi
       
           echo "Logging into $ACR_LOGIN_SERVER as $ACR_USERNAME"
-          echo "$ACR_PASSWORD" | docker login "$ACR_LOGIN_SERVER" -u "$ACR_USERNAME" --password-stdin
+          echo "$ACR_PASSWORD" | sudo docker login "$ACR_LOGIN_SERVER" -u "$ACR_USERNAME" --password-stdin
 
       - name: Build Docker image for bankapp
         run: |
