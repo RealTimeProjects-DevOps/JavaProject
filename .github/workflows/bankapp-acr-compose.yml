@@ -62,14 +62,14 @@ jobs:
       - name: Build Docker image for bankapp
         run: |
           # Build image using the Dockerfile in the repo root
-          docker build -t "$BANKAPP_IMAGE" .
+           sudo docker build -t "$BANKAPP_IMAGE" .
 
       - name: Push image to ACR
         run: |
-          docker push "$BANKAPP_IMAGE"
+          sudo docker push "$BANKAPP_IMAGE"
 
       - name: Show docker images (debug)
-        run: docker images
+        run: sudo docker images
 
       - name: Stop and remove existing stack (if any)
         continue-on-error: true
