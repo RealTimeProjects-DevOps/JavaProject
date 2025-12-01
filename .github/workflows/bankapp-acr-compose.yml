@@ -45,7 +45,16 @@ jobs:
           mvn -B clean package -DskipTests
 
       - name: Login to Azure Container Registry
+        env:
+          ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
+          ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+          ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
         run: |
+          echo "Checking env vars..."
+          if [ -z "$ACR_LOGIN_SERVER" ]; then echo "ACR_LOGIN_SERVER is EMPTY"; exit 1; fi
+          if [ -z "$ACR_USERNAME" ]; then echo "ACR_USERNAME is EMPTY"; exit 1; fi
+      
+          echo "Logging into $ACR_LOGIN_SERVER as $ACR_USERNAME"
           echo "$ACR_PASSWORD" | docker login "$ACR_LOGIN_SERVER" -u "$ACR_USERNAME" --password-stdin
 
       - name: Build Docker image for bankapp
