@@ -1,4 +1,4 @@
-name: BankApp CI/CD to ACR + Docker Compose
+name: BankApp CI/CD 
 
 on:
   push:
