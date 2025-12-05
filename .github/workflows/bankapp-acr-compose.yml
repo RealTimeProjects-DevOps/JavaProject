@@ -97,7 +97,7 @@ jobs:
   UAT-build-push-deploy:
     needs: Dev-build-push-deploy
     runs-on: selfhosted2
-    environment: UAT
+    environment: DEV
 
     env:
       ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }} 
