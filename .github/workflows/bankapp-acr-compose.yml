@@ -96,7 +96,7 @@ jobs:
           
   UAT-build-push-deploy:
     needs: Dev-build-push-deploy
-    runs-on: self-hosted
+    runs-on: selfhosted2
     environment: UAT
 
     env:
