@@ -6,9 +6,98 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-push-deploy:
+  Dev-build-push-deploy:
     runs-on: self-hosted
     environment: DEV 
+
+    env:
+      ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }} 
+      ACR_USERNAME:      ${{ secrets.ACR_USERNAME }} 
+      ACR_PASSWORD:      ${{ secrets.ACR_PASSWORD }}
+      BANKAPP_IMAGE:     ${{ secrets.ACR_LOGIN_SERVER }}/bankapp:${{ github.sha }}
+      MYSQL_ROOT_PASSWORD:         ${{ secrets.MYSQL_ROOT_PASSWORD }} 
+      MYSQL_DATABASE:              ${{ secrets.MYSQL_DATABASE }}  
+      MYSQL_USER:                  ${{ secrets.MYSQL_USER }} 
+      MYSQL_PASSWORD:              ${{ secrets.MYSQL_PASSWORD }}
+      MYSQL_PORT:                  3306
+
+      SPRING_DATASOURCE_URL:       ${{ secrets.SPRING_DATASOURCE_URL }}
+      SPRING_DATASOURCE_USERNAME:  ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+      SPRING_DATASOURCE_PASSWORD:  ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+      BANKAPP_PORT:                8080
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Build Spring Boot JAR (skip tests)
+        run: |
+          mvn -B clean package -DskipTests
+
+      - name: Login to Azure Container Registry
+        run: |
+
+          echo "Logging into $ACR_LOGIN_SERVER as $ACR_USERNAME"
+          echo "$ACR_PASSWORD" | sudo docker login "$ACR_LOGIN_SERVER" -u "$ACR_USERNAME" --password-stdin
+
+      - name: Build Docker image for bankapp
+        run: |
+          echo "Building image: $BANKAPP_IMAGE"
+          sudo docker build -t "$BANKAPP_IMAGE" .
+
+      - name: Push image to ACR
+        run: |
+          echo "Pushing image: $BANKAPP_IMAGE"
+          sudo docker push "$BANKAPP_IMAGE"
+
+      - name: Show docker images (debug)
+        run: sudo docker images
+
+      - name: Stop and remove existing stack (if any)
+        continue-on-error: true
+        run: |
+          # Bring down current compose stack and orphans
+          sudo docker compose down --remove-orphans || true
+
+          # Extra safety: force remove any leftover container named 'bankapp'
+          sudo docker rm -f bankapp || true
+
+
+      - name: Start stack with Docker Compose (using env vars)
+        env:
+          # Reuse job-level env vars here so they are visible to docker compose
+          BANKAPP_IMAGE:            ${{ env.BANKAPP_IMAGE }}
+
+          MYSQL_ROOT_PASSWORD:      ${{ env.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE:           ${{ env.MYSQL_DATABASE }}
+          MYSQL_USER:               ${{ env.MYSQL_USER }}
+          MYSQL_PASSWORD:           ${{ env.MYSQL_PASSWORD }}
+
+          SPRING_DATASOURCE_URL:       ${{ env.SPRING_DATASOURCE_URL }}
+          SPRING_DATASOURCE_USERNAME:  ${{ env.SPRING_DATASOURCE_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD:  ${{ env.SPRING_DATASOURCE_PASSWORD }}
+
+          BANKAPP_PORT: "8080"
+          MYSQL_PORT:   "3306"
+        run: |
+          echo "BANKAPP_IMAGE=$BANKAPP_IMAGE"
+          # -E keeps the env vars when using sudo
+          sudo -E docker compose up -d
+
+      - name: Show running containers (debug)
+        run: |
+          sudo docker ps
+          
+  UAT-build-push-deploy:
+    needs: Dev-build-push-deploy
+    runs-on: self-hosted
+    environment: UAT
 
     env:
       ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }} 
