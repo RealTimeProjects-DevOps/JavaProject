@@ -1,5 +1,6 @@
-name: BankApp CI/CD 
-
+name: BankApp CI/CD
+run-name: ${{github.sha}}
+ 
 on:
   push:
     branches: [ main ]
