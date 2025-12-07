@@ -10,6 +10,7 @@ jobs:
   Dev-build-push-deploy:
     runs-on: self-hosted
     environment: DEV 
+if github.ref_name=="feature"
 
     env:
       ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }} 
