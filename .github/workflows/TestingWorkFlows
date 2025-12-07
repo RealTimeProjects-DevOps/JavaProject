@@ -3,4 +3,6 @@ on: workflow_dispatch
 jobs:
 runs-on: ubuntu-latest
   Build:
-    run: echo "THis is build job"
+  steps:
+    -name: sample
+      run: echo "THis is build job"
