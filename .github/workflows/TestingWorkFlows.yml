@@ -16,4 +16,10 @@ jobs:
         run: |
               echo "sha=${{github.sha}}" >>GITHUB_OUTPUT
               echo ${{github.ref_name}}
-        
+      - name: GitOutPut
+        if: outputs.github_sha
+        run: |
+            echo "Output Values has been successfully fetched"
+            echo "OutPut values is outputs.github_sha"
+            
+      
