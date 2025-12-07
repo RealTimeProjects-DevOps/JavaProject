@@ -8,9 +8,9 @@ on:
 
 jobs:
   Dev-build-push-deploy:
+    if: github.ref == 'refs/heads/main/feature'
     runs-on: self-hosted
-    environment: DEV 
-if github.ref_name=="feature"
+    environment: DEV
 
     env:
       ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }} 
