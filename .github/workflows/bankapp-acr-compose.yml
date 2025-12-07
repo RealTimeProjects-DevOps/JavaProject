@@ -98,7 +98,7 @@ jobs:
           
   UAT-build-push-deploy:
     needs: Dev-build-push-deploy
-    if: failure()
+    #if: failure()
     runs-on: selfhosted2
     environment: DEV
 
