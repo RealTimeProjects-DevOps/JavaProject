@@ -2,7 +2,7 @@ name: BankApp CI/CD
 run-name: ${{github.sha}}
  
 on:
-  push:
+  #push:
     #branches: [ master ]
   workflow_dispatch:
 
