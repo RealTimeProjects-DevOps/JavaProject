@@ -9,4 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: sample
-        run: echo "This is build job"
+        run: |
+              echo "github.sha"
+              echo "github.ref_name"
+        
