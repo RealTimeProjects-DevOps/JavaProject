@@ -7,9 +7,13 @@ on:
 jobs:
   Build:
     runs-on: ubuntu-latest
+    outputs:
+      github_sha: ${{steps.step1.output.sha}}
     steps:
+  
       - name: sample
+        id: step1
         run: |
-              echo ${{github.sha}}
+              echo "sha=${{github.sha}}" >>GITHUB_OUTPUT
               echo ${{github.ref_name}}
         
