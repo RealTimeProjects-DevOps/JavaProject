@@ -1,5 +1,6 @@
 name: TestingAllWorkFlows
 on: workflow_dispatch
 jobs:
+runs-on: ubuntu-latest
   Build:
     run: echo "THis is build job"
