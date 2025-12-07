@@ -1,4 +1,5 @@
 name: TestingAllWorkFlows
+run-name: TestingAllWorkFlows
 
 on:
   workflow_dispatch:
