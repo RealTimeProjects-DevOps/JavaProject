@@ -3,7 +3,7 @@ run-name: ${{github.sha}}
  
 on:
   push:
-    branches: [ master ]
+    #branches: [ master ]
   workflow_dispatch:
 
 jobs:
