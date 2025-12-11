@@ -8,7 +8,7 @@ on:
 
 jobs:
   Dev-build-push-deploy:
-    if: github.ref == 'refs/heads/main/feature'
+    #if: github.ref == 'refs/heads/main/feature'
     runs-on: self-hosted
     outputs: 
       image-status: ${{ steps.imagebuild.outputs.image }}
