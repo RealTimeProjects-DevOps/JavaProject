@@ -10,6 +10,7 @@ jobs:
   Dev-build-push-deploy:
     #if: github.ref == 'refs/heads/main/feature'
     runs-on: self-hosted
+    outputs: ${{steps.imagebuild.output.image}}
     environment: DE
 
     env:
@@ -37,6 +38,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+          
 
       - name: Build Spring Boot JAR (skip tests)
         run: |
@@ -49,9 +51,11 @@ jobs:
           echo "$ACR_PASSWORD" | sudo docker login "$ACR_LOGIN_SERVER" -u "$ACR_USERNAME" --password-stdin
 
       - name: Build Docker image for bankapp
+        id: imagebuild
         run: |
           echo "Building image: $BANKAPP_IMAGE"
           sudo docker build -t "$BANKAPP_IMAGE" .
+          ehco "image=$BANKAPP_IMAGE" >> $GITHUB_OUTPUT
 
       - name: Push image to ACR
         run: |
@@ -98,8 +102,8 @@ jobs:
           
   UAT-build-push-deploy:
     needs: Dev-build-push-deploy
-    #if: failure()
-    runs-on: selfhosted2
+    if: ${{needs.Dev-build-push-deploy.output.image}}
+    runs-on: self-hosted
     environment: DEV
 
     env:
