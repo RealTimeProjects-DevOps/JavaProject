@@ -60,7 +60,7 @@ jobs:
         run: |
           echo "Building image: $BANKAPP_IMAGE"
           sudo docker build -t "$BANKAPP_IMAGE" .
-          ehco "image=$BANKAPP_IMAGE" >> "$GITHUB_OUTPUT"
+          echo "image=$BANKAPP_IMAGE" >> "$GITHUB_OUTPUT"
 
       - name: Push image to ACR
         run: |
