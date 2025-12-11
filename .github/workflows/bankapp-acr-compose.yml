@@ -11,7 +11,7 @@ jobs:
     if: github.ref == 'refs/heads/main/feature'
     runs-on: self-hosted
     outputs: 
-      imagestatus: ${{ steps.imagebuild.outputs.image }}
+      image-status: ${{ steps.imagebuild.outputs.image }}
     environment: DEV
 
     env:
