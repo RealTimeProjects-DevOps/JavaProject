@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  Dev-build-push-deploy:
+  DevBuild:
     #if: github.ref == 'refs/heads/main/feature'
     runs-on: self-hosted
     outputs: 
@@ -106,8 +106,8 @@ jobs:
           sudo docker ps
           
   UAT-build-push-deploy:
-    needs: Dev-build-push-deploy
-    if: ${{needs.Dev-build-push-deploy.outputs.imagestatus}}
+    needs: DevBuild
+    if: ${{needs.DevBuild.outputs.imagestatus !=''}}
     runs-on: selfhosted2
     environment: DEV
 
