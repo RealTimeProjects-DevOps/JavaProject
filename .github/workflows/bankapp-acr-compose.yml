@@ -10,7 +10,8 @@ jobs:
   Dev-build-push-deploy:
     #if: github.ref == 'refs/heads/main/feature'
     runs-on: self-hosted
-    outputs: ${{ steps.imagebuild.outputs.image }}
+    outputs: 
+      image-status: ${{ steps.imagebuild.outputs.image }}
     environment: DE
 
     env:
@@ -102,7 +103,7 @@ jobs:
           
   UAT-build-push-deploy:
     needs: Dev-build-push-deploy
-    if: ${{needs.Dev-build-push-deploy.output.image}}
+    if: ${{needs.Dev-build-push-deploy.output.image-status}}
     runs-on: self-hosted
     environment: DEV
 
