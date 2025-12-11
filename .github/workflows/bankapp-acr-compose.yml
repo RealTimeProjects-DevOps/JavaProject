@@ -61,6 +61,10 @@ jobs:
           echo "Building image: $BANKAPP_IMAGE"
           sudo docker build -t "$BANKAPP_IMAGE" .
           echo "image=$BANKAPP_IMAGE" >> "$GITHUB_OUTPUT"
+      - name: Check Output COntent
+        run: |
+          echo "out put is: ${{ steps.imagebuild.outputs.image }}"
+
 
       - name: Push image to ACR
         run: |
