@@ -9,7 +9,7 @@ on:
 jobs:
   DevBuild:
     #if: github.ref == 'refs/heads/main/feature'
-    runs-on: self-hosted
+    runs-on: awsgithubagent
     outputs: 
       imagestatus: ${{ steps.imagebuild.outputs.image }}
     environment: DEV
