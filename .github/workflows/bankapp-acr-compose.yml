@@ -10,8 +10,8 @@ jobs:
   DevBuild:
     #if: github.ref == 'refs/heads/main/feature'
     runs-on: awsgithub
-    outputs: 
-      imagestatus: ${{ steps.imagebuild.outputs.image }}
+    # outputs: 
+    #   imagestatus: ${{ steps.imagebuild.outputs.image }}
     environment: DEV
 
     env:
