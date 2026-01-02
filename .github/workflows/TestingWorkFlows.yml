@@ -7,8 +7,8 @@ on:
 jobs:
   Build:
     runs-on: ubuntu-latest
-    outputs:
-      github_sha: ${{steps.step1.output.sha}}
+    # outputs:
+    #   github_sha: ${{steps.step1.output.sha}}
     steps:
   
       - name: sample
@@ -17,7 +17,7 @@ jobs:
               echo "sha=${{github.sha}}" >>GITHUB_OUTPUT
               echo ${{github.ref_name}}
       - name: GitOutPut
-        if: outputs.github_sha
+        # if: outputs.github_sha
         run: |
             echo "Output Values has been successfully fetched"
             echo "OutPut values is outputs.github_sha"
