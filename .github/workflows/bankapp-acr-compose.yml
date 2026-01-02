@@ -15,7 +15,7 @@ jobs:
     environment: DEV
 
     env:
-      ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }} 
+      echo ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
       ACR_USERNAME:      ${{ secrets.ACR_USERNAME }} 
       ACR_PASSWORD:      ${{ secrets.ACR_PASSWORD }}
       BANKAPP_IMAGE:     ${{ secrets.ACR_LOGIN_SERVER }}/bankapp:${{ github.sha }}
@@ -31,6 +31,9 @@ jobs:
       BANKAPP_PORT:                8080
 
     steps:
+      - run: printenv
+         
+      
       - name: Checkout repo
         uses: actions/checkout@v4
 
