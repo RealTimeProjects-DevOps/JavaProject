@@ -1,1 +1,15 @@
-
+name: NewTestActions
+on: 
+  workflow_dispatch:
+    inputs:
+      target_environment:
+        description: Take Input
+        required: true
+        default: dev
+        type: choice
+        options:
+          - dev
+          - qa
+jobs:
+  build:
+    runs-on: ubuntu-latest
