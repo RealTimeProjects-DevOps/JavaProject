@@ -24,7 +24,7 @@ jobs:
         run: |
           echo "build java code"
           echo "buildid=1.0" >> "$GITHUB_OUTPUT"
-          echo  "build id is {{ steps.buildversion.outputs.buildid }}"
+          echo  "build id is ${{ steps.buildversion.outputs.buildid }}"
           
   
   deploy:
