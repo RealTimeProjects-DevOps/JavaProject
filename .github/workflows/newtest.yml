@@ -1,5 +1,9 @@
 name: NewTestActions
 on: 
+  push:
+    branches:
+      - master
+      - dev/*
   workflow_dispatch:
     inputs:
       application_name:
