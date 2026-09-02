@@ -23,7 +23,7 @@ jobs:
         id: buildversion
         run: |
           echo "build java code"
-          echo "buildid=1.0" >> "$GITHUB_OUTPUT
+          echo "buildid=1.0" >> "$GITHUB_OUTPUT"
           echo  "build id is {{ steps.buildversion.outputs.buildid }}"
           
   
