@@ -2,12 +2,25 @@ name: NewTestActions
 on: 
   workflow_dispatch:
     inputs:
+      application_name:
+        description: "Enter application name"
+        required: true
+        type: string
+
+      run_tests:
+        description: "Run tests?"
+        required: true
+        type: boolean
+        default: true
+
       target_environment:
-        description: Take Input
+        description: "Select deployment environment"
+        required: true
         type: choice
         options:
           - dev
           - qa
+          - prod
 jobs:
   build:
     runs-on: testagent
