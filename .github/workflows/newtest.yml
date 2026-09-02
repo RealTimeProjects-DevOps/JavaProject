@@ -19,3 +19,19 @@ jobs:
           echo "running build job"
           echo "printing current workspace"
           echo ${{github.workspace}}
+
+   steps:
+      - name: build code
+        run: echo "build java code"
+  
+  Deploy:
+    runs-on: testagent
+    steps:
+      - name: DevDeployment
+        if: ${{ inputs.target_environment == 'dev' }}
+        run: echo "deploy to dev server"
+    steps:
+      - name: DevDeployment
+        if: ${{ inputs.target_environment == 'qa' }}
+        run: echo "deploy to QA server"
+      
