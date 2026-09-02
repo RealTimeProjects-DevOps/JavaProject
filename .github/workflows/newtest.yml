@@ -12,7 +12,9 @@ on:
           - qa
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: testagent
     steps:
       - name: Checkout Code
-        run: echo "running build job"
+        run: |
+          echo "running build job"
+          echo ${{github.workspace}}
