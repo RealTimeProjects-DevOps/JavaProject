@@ -17,4 +17,5 @@ jobs:
       - name: Checkout Code
         run: |
           echo "running build job"
+          echo "printing current workspace"
           echo ${{github.workspace}}
