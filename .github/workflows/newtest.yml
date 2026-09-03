@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       application_name:
-        description: "Enter application name"
+        # description: "Enter application name"
         required: true
         type: string
 
